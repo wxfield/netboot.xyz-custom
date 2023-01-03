@@ -27,7 +27,7 @@ boot || goto custom_exit
 
 :option_two
 kernel https://boot.netboot.xyz/memdisk raw iso
-initrd http://10.175.61.2/iso_images/CentOS-8.5.2111-x86_64-dvd1.iso
+initrd http://10.175.61.2/iso_images/CentOS-8.5.2111-x86_64-boot.iso
 #initrd http://path.to/iso
 boot || goto custom_exit
 
