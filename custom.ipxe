@@ -18,9 +18,11 @@ goto ${custom_choice}
 goto custom_exit
 
 :option_one
-kernel http://path.to/vmlinuz
-initrd http://path.to/initrd
-imgargs vmlinuz put_kernel_img_args_here
+#kernel http://path.to/vmlinux
+kernel http://10.175.61.2/centos/8.5.2111/BaseOS/x86_64/os/images/pxeboot/vmlinuz
+#initrd http://path.to/initrd
+initrd http://10.175.61.2/centos/8.5.2111/BaseOS/x86_64/os/images/pxeboot/initrd.img
+imgargs vmlinuz console=tty0 console=ttyS0,115200n8
 boot || goto custom_exit
 
 :option_two
