@@ -45,12 +45,13 @@ exit
 # CentOS Operating System
 # http://www.centos.org
 
-#isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
-#set ipparam BOOTIF=${netX/mac} ${ipparam}
+isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
+set ipparam BOOTIF=${netX/mac} ${ipparam}
 
 #goto ${menu} ||
+goto custom ||
 
-:centos
+:custom
 clear osversion
 set os {{ releases.centos.name }}
 set os_arch ${arch}
