@@ -35,9 +35,9 @@
 #echo Chains into another menu...
 #chain https://raw.githubusercontent.com/${github_user}/netboot.xyz-custom/master/custom1.ipxe || goto custom
 
-:custom_exit
-chain utils.ipxe
-exit
+#:custom_exit
+#chain utils.ipxe
+#exit
 
 
 #!ipxe
@@ -120,3 +120,7 @@ goto custom_exit
 #:linux_menu
 #clear menu
 #exit 0
+
+:custom_exit
+chain utils.ipxe
+exit
