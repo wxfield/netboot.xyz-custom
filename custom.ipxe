@@ -31,12 +31,19 @@ set centos_mirror http://archive.kernel.org/
 #isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
 #set ipparam BOOTIF=${netX/mac} ${ipparam}
 
-#kernel ${centos_mirror}/${dir}/images/pxeboot/vmlinuz inst.repo=${repo} ${params} ${ipparam} {{ kernel_params }}
-kernel http://10.175.61.2/centos/images/pxeboot/vmlinuz inst.repo=${dir} ${ipparam} console=tty0 console=ttyS0,115200n8
-#initrd http://path.to/initrd
-initrd http://10.175.61.2/centos/images/pxeboot/initrd.img
-#imgargs vmlinuz console=tty0 console=ttyS0,115200n8
+kernel ${dir}/images/pxeboot/vmlinuz inst.repo=${dir} ${ipparam} console=tty0 console=ttyS0,115200n8
+initrd ${dir}/images/pxeboot/initrd.img
+echo
+echo MD5sums:
+md5sum vmlinuz initrd.img
 boot || goto custom_exit
+
+##kernel ${centos_mirror}/${dir}/images/pxeboot/vmlinuz inst.repo=${repo} ${params} ${ipparam} {{ kernel_params }}
+#kernel http://10.175.61.2/centos/images/pxeboot/vmlinuz inst.repo=${dir} ${ipparam} console=tty0 console=ttyS0,115200n8
+##initrd http://path.to/initrd
+#initrd http://10.175.61.2/centos/images/pxeboot/initrd.img
+##imgargs vmlinuz console=tty0 console=ttyS0,115200n8
+#boot || goto custom_exit
 
 :option_two
 kernel https://boot.netboot.xyz/memdisk raw iso
