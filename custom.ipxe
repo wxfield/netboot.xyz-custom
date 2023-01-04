@@ -26,7 +26,7 @@ set dir http://archive.kernel.org/centos-vault/8.5.2111/BaseOS/x86_64/os/
 #set repo ${centos_mirror}/${dir}
 set repo http://archive.kernel.org/centos-vault/
 #set centos_mirror http://mirror.stream.centos.org
-centos_mirror http://archive.kernel.org/               
+set centos_mirror http://archive.kernel.org/               
 #set dhcp and IP usage
 #isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
 #set ipparam BOOTIF=${netX/mac} ${ipparam}
