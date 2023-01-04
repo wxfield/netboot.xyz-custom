@@ -2,6 +2,9 @@
 ###
 ### netboot.xyz-custom menu example
 ###
+isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
+set ipparam BOOTIF=${netX/mac} ${ipparam}
+
 
 :custom
 clear custom_choice
@@ -25,8 +28,8 @@ set repo http://archive.kernel.org/centos-vault/
 #set centos_mirror http://mirror.stream.centos.org
 centos_mirror http://archive.kernel.org/               
 #set dhcp and IP usage
-isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
-set ipparam BOOTIF=${netX/mac} ${ipparam}
+#isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
+#set ipparam BOOTIF=${netX/mac} ${ipparam}
 
 #kernel ${centos_mirror}/${dir}/images/pxeboot/vmlinuz inst.repo=${repo} ${params} ${ipparam} {{ kernel_params }}
 kernel http://10.175.61.2/centos/images/pxeboot/vmlinuz inst.repo=${dir} ${ipparam} console=tty0 console=ttyS0,115200n8
