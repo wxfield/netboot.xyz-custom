@@ -1,40 +1,79 @@
 #!ipxe
-###
-### netboot.xyz-custom menu example
-###
 
-:custom
-clear custom_choice
-menu This is a Test Menu
-item --gap This is the first sub menu
-item option_one ${space} Loading a kernel and initrd
-item option_two ${space} Loading an ISO
-item --gap This is a second sub menu
-item option_three ${space} Loads another custom sub menu
-item option_four ${space} This is option four
-choose custom_choice || goto custom_exit
+# CentOS Operating System
+# http://www.centos.org
+
+isset ${dhcp-server} && set ipparam ip=dhcp || set ipparam ip=${ip}::${gateway}:${netmask}:::none nameserver=${dns}
+set ipparam BOOTIF=${netX/mac} ${ipparam}
+
+goto ${menu} ||
+
+:centos
+clear osversion
+set os {{ releases.centos.name }}
+set os_arch ${arch}
+iseq ${os_arch} x86_64 && set os_arch x86_64 ||
+iseq ${os_arch} arm64 && set os_arch aarch64 ||
+menu ${os} - ${os_arch}
+{% for item in releases.centos.versions %}
+item {{ item.code_name }} ${space} ${os} {{ item.name }}
+{% endfor %}
+isset ${osversion} || choose osversion || goto linux_menu
 echo ${cls}
-goto ${custom_choice}
-goto custom_exit
+set dir ${centos_base_dir}/${osversion}/BaseOS/${os_arch}/os
+iseq ${osversion} 7 && set dir ${centos_base_dir}/${osversion}/os/${os_arch} ||
+set repo ${centos_mirror}/${dir}
+goto boottype
 
-:option_one
-#kernel http://path.to/vmlinux
-kernel http://10.175.61.2/centos/images/pxeboot/vmlinuz
-#initrd http://path.to/initrd
-initrd http://10.175.61.2/centos/images/pxeboot/initrd.img
-imgargs vmlinuz console=tty0 console=ttyS0,115200n8
-boot || goto custom_exit
+:boottype
+set ova ${os} ${osversion}
+menu ${os} ${os_arch} boot type
+item graphical ${ova} graphical installer
+item text ${ova} text based installer
+item rescue ${ova} rescue
+item kickstart ${ova} set kickstart url [ ${ksurl} ]
+item kickstart_device ${ova} set ksdevice [ ${ksdevice} ]
+isset ${bt} || choose bt || goto centos
+echo ${cls}
+iseq ${bt} text && goto text ||
+iseq ${bt} rescue && goto rescue ||
+iseq ${bt} kickstart && goto kickstart ||
+iseq ${bt} kickstart_device && goto kickstart_device ||
+goto bootos_images
 
-:option_two
-kernel https://boot.netboot.xyz/memdisk raw iso
-initrd http://10.175.61.2/iso_images/CentOS-8.5.2111-x86_64-boot.iso
-#initrd http://path.to/iso
-boot || goto custom_exit
+:text
+set params inst.text ||
+goto bootos_images
 
-:option_three
-echo Chains into another menu...
-chain https://raw.githubusercontent.com/${github_user}/netboot.xyz-custom/master/custom1.ipxe || goto custom
+:rescue
+set params rescue ||
+goto bootos_images
 
-:custom_exit
-chain utils.ipxe
-exit
+:kickstart
+echo -n Specify kickstart URL for ${os} ${osversion}: && read ksurl
+set params inst.ks=${ksurl} ||
+clear bt
+goto boottype
+
+:kickstart_device
+echo -n Specify ksdevice param for ${os} ${osversion}: && read ksdevice
+set ksdevice ${ksdevice} ||
+clear bt
+goto boottype
+
+:bootos_images
+imgfree
+iseq ${osversion} 9-stream && set centos_mirror http://mirror.stream.centos.org || 
+iseq ${osversion} 9-stream && set dir ${osversion}/BaseOS/${os_arch}/os ||
+iseq ${osversion} 9-stream && set repo ${centos_mirror}/${dir} ||
+kernel ${centos_mirror}/${dir}/images/pxeboot/vmlinuz inst.repo=${repo} ${params} ${ipparam} {{ kernel_params }}
+initrd ${centos_mirror}/${dir}/images/pxeboot/initrd.img
+echo
+echo MD5sums:
+md5sum vmlinuz initrd.img
+boot
+goto linux_menu
+
+:linux_menu
+clear menu
+exit 0
